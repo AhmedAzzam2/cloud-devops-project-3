@@ -129,7 +129,6 @@ jobs:
       - save_cache:
           paths: [frontend/node_modules]
           key: frontend-build
-      # - notify_on_failure
 
   build-backend:
     docker:
@@ -147,7 +146,6 @@ jobs:
       - save_cache:
           paths: [backend/node_modules]
           key: backend-build
-      # - notify_on_failure
 
   test-frontend:
     docker:
@@ -163,7 +161,6 @@ jobs:
             npm i
             npm run test
       # - notify_on_failure
-                
   test-backend:
     docker:
       - image: cimg/node:13.8.0
@@ -178,7 +175,6 @@ jobs:
             npm i
             npm run test
       # - notify_on_failure
-            
   scan-frontend:
     docker:
       - image: cimg/node:13.8.0
@@ -194,7 +190,6 @@ jobs:
             npm audit fix --force --audit-level=critical
             npm audit fix --force --audit-level=critical
             npm audit --audit-level=critical
-      # - notify_on_failure
 
 
   scan-backend:
@@ -212,7 +207,6 @@ jobs:
             npm audit fix --force --audit-level=critical
             npm audit fix --force --audit-level=critical
             npm audit --audit-level=critical
-      # - notify_on_failure
 
 
 
