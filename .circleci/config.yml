@@ -69,16 +69,16 @@ commands:
 
 
 
-orbs: 
-    slack: circleci/slack@4.10.1
+# orbs: 
+#     slack: circleci/slack@4.10.1
 
-commands:
-    notify_on_failure:
-        steps:
-        - slack/notify:
-            event: fail
-            channel: Ahmed
-            template: basic_fail_1    
+# commands:
+#     notify_on_failure:
+#         steps:
+#         - slack/notify:
+#             event: fail
+#             channel: Ahmed
+#             template: basic_fail_1    
 
 # commands:
 #   destroy-environment:
@@ -386,14 +386,14 @@ jobs:
 #               # your code here
 #             fi
             
-  notify_on_success:
-      docker:
-      - image: cimg/base:stable
-      steps:
-      - slack/notify:
-          event: pass
-          channel: Ahmed
-          template: success_tagged_deployment_1
+  # notify_on_success:
+  #     docker:
+  #     - image: cimg/base:stable
+  #     steps:
+  #     - slack/notify:
+  #         event: pass
+  #         channel: Ahmed
+  #         template: success_tagged_deployment_1
 
 
 
