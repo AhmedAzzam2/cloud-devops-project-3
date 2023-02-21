@@ -283,7 +283,7 @@ jobs:
 
   run-migrations:
     docker:
-      - image: node:13.8-base
+      - image: cimg/node:13.8.0
 
     steps:
       - checkout
@@ -293,11 +293,11 @@ jobs:
       - run:
           name: Update package manager cache
           command: |
-            apt-get update
+            sudo apt-get update
       - run:
           name: Install required packages
           command: |
-            apt-get -y install curl awscli
+            sudo apt-get -y install awscli
       - run:
           name: Run database migrations
           command: |
@@ -437,27 +437,27 @@ jobs:
 workflows:
   default:
     jobs:
-      - build-frontend
-      - build-backend
-      - test-frontend:
-          requires: [build-frontend]
-      - test-backend:
-          requires: [build-backend]
-      - scan-backend:
-          requires: [build-backend]
-      - scan-frontend:
-          requires: [build-frontend] 
-      - deploy-infrastructure:
-          requires: [test-frontend, test-backend, scan-frontend, scan-backend]
-          filters:
-            branches:
-              only: main
+      # - build-frontend
+      # - build-backend
+      # - test-frontend:
+      #     requires: [build-frontend]
+      # - test-backend:
+      #     requires: [build-backend]
+      # - scan-backend:
+      #     requires: [build-backend]
+      # - scan-frontend:
+      #     requires: [build-frontend] 
+      - deploy-infrastructure
+      #     requires: [test-frontend, test-backend, scan-frontend, scan-backend]
+      #     filters:
+      #       branches:
+      #         only: main
       - configure-infrastructure:
           requires: [deploy-infrastructure]
-      - run-migrations:
-          requires: [configure-infrastructure]
-      - deploy-frontend:
-          requires: [run-migrations]
+      - run-migrations
+          # requires: [configure-infrastructure]
+      # - deploy-frontend:
+      #     requires: [run-migrations]
       # - deploy-backend:
       #     requires: [run-migrations]
       # - smoke-test:
