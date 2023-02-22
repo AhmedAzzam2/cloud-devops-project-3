@@ -29,19 +29,34 @@ commands:
             sudo npm install --global n
             sudo n 13.8.0
 
+  # destroy-environment:
+  #   parameters:
+  #     Workflow_ID:
+  #       type: string
+  #       default: ${CIRCLE_WORKFLOW_ID:0:7}
+  #   steps:
+  #     - run:
+  #         name: Destroy environments
+  #         when: on_fail
+  #         command: |
+  #           aws cloudformation delete-stack --stack-name udapeople-backend-<< parameters.Workflow_ID >>
+  #           aws s3 rm s3://udapeople-<< parameters.Workflow_ID >> --recursive
+  #           aws cloudformation delete-stack --stack-name udapeople-frontend-<< parameters.Workflow_ID >>
   destroy-environment:
-    parameters:
-      Workflow_ID:
-        type: string
-        default: ${CIRCLE_WORKFLOW_ID:0:7}
-    steps:
-      - run:
-          name: Destroy environments
-          when: on_fail
-          command: |
-            aws cloudformation delete-stack --stack-name udapeople-backend-<< parameters.Workflow_ID >>
-            aws s3 rm s3://udapeople-<< parameters.Workflow_ID >> --recursive
-            aws cloudformation delete-stack --stack-name udapeople-frontend-<< parameters.Workflow_ID >>
+  steps:
+    - run:
+        name: Destroy old environments
+        when: on_fail
+        command: |
+          # Delete the backend stack
+          aws cloudformation delete-stack --stack-name udapeople-backend-STACK_NAME
+          
+          # Delete the frontend stack
+          aws cloudformation delete-stack --stack-name udapeople-frontend-STACK_NAME
+          
+          # Delete the S3 bucket and its contents
+          aws s3 rb s3://udapeople-STACK_NAME --force
+
 
   revert-migrations:
     parameters:
