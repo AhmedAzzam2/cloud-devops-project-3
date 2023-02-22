@@ -202,7 +202,7 @@ jobs:
       - checkout
       - add_ssh_keys:
           # You can get this ID in the section where you registered the SSH Key
-          fingerprints: ["d0:8e:91:0b:04:af:af:a3:4a:c5:81:ac:d4:44:05:68"]
+          fingerprints: ["a4:74:dc:db:59:70:b6:a5:dc:2b:13:83:00:58:a9:58"]
       - attach_workspace:
           at: ~/  
       - run:
@@ -309,7 +309,7 @@ jobs:
       - checkout
       - add_ssh_keys:
           fingerprints: 
-            - "d0:8e:91:0b:04:af:af:a3:4a:c5:81:ac:d4:44:05:68"   
+            - "a4:74:dc:db:59:70:b6:a5:dc:2b:13:83:00:58:a9:58"   
       - run:
           name: Install dependencies
           command: |  
