@@ -2,27 +2,63 @@ version: 2.1
 commands:
   install_awscli:
     steps:
-      - run: curl -o awscliv2.zip https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip && unzip awscliv2.zip && sudo ./aws/install
+      - run:
+          name: Install AWS CLI v2
+          command: |
+            curl -o awscliv2.zip https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip
+            unzip awscliv2.zip
+            sudo ./aws/install
 
   install_ansible:
     steps:
-      - run: sudo apt update && sudo apt install software-properties-common -y && sudo add-apt-repository --yes --update ppa:ansible/ansible && sudo apt install ansible -y
+      - run:
+          name: Install Ansible
+          command: |
+            sudo apt update
+            sudo apt install software-properties-common -y
+            sudo add-apt-repository --yes --update ppa:ansible/ansible
+            sudo apt install ansible -y
 
   install_nodejs:
     steps:
-      - run: curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash - && sudo apt install -y nodejs && sudo npm install --global n && sudo n 13.8.0
+      - run:
+          name: Install Node.js 13
+          command: |
+            curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
+            sudo apt install -y nodejs
+            sudo npm install --global n
+            sudo n 13.8.0
 
   destroy-environment:
     parameters:
-      Workflow_ID: {type: string, default: ${CIRCLE_WORKFLOW_ID:0:7}}
+      Workflow_ID:
+        type: string
+        default: ${CIRCLE_WORKFLOW_ID:0:7}
     steps:
-      - run: aws cloudformation delete-stack --stack-name udapeople-backend-<< parameters.Workflow_ID >> && aws s3 rm s3://udapeople-<<parameters.Workflow_ID>> --recursive && aws cloudformation delete-stack --stack-name udapeople-frontend-<< parameters.Workflow_ID >>
+      - run:
+          name: Destroy environments
+          when: on_fail
+          command: |
+            aws cloudformation delete-stack --stack-name udapeople-backend-<< parameters.Workflow_ID >>
+            aws s3 rm s3://udapeople-<< parameters.Workflow_ID >> --recursive
+            aws cloudformation delete-stack --stack-name udapeople-frontend-<< parameters.Workflow_ID >>
 
   revert-migrations:
     parameters:
-      Workflow_ID: {type: string, default: ${CIRCLE_WORKFLOW_ID:0:7}}
+      Workflow_ID:
+        type: string
+        default: ${CIRCLE_WORKFLOW_ID:0:7}
     steps:
-      - run: SUCCESS=$(curl --insecure  https://kvdb.io/${KVDB_BUCKET}/migration_<< parameters.Workflow_ID >>) && if (( $SUCCESS == 1 )); then cd ~/project/backend && npm install && npm run migration:revert; fi
+      - run:
+          name: Revert migrations
+          when: on_fail
+          command: |
+            SUCCESS=$(curl --insecure https://kvdb.io/${KVDB_BUCKET}/migration_<< parameters.Workflow_ID >>)
+            if (( $SUCCESS == 1 )); then
+              cd ~/project/backend
+              npm install
+              npm run migration:revert
+            fi
 
 
 jobs:
