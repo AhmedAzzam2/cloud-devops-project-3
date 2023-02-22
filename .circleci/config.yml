@@ -1,7 +1,5 @@
 version: 2.1
 
-commands:
-# This command installs AWS CLI version 2
 
 # # awscli.sh
 # #!/bin/bash
@@ -22,18 +20,28 @@ commands:
 #           chmod +x awscli.sh
 #           ./awscli.sh
 
-install_awscli:
+commands:
+  install_awscli:
     description: Install AWS CLI v2
     steps:
       - run:
           name: Install AWS CLI v2
           command: |
-            # Download AWS CLI v2 zip file
             curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-            # Unzip the downloaded zip file
             unzip awscliv2.zip
-            # Run the installation script to install AWS CLI v2
             sudo ./aws/install
+
+  install_ansible:
+    description: Install Ansible
+    steps:
+      - run:
+          name: Install Ansible
+          command: |
+            sudo apt update
+            sudo apt install software-properties-common -y
+            sudo add-apt-repository --yes --update ppa:ansible/ansible
+            sudo apt install ansible -y
+
 
 # This command installs Ansible
 # # ansible.sh
@@ -56,43 +64,7 @@ install_awscli:
 #         command: |
 #           chmod +x ansible.sh
 #           ./ansible.sh
-
-install_ansible:
-    description: Install Ansible
-    steps:
-      - run:
-          name: Install Ansible
-          command: |
-            # Update package index
-            sudo apt update
-            # Install software properties common package
-            sudo apt install software-properties-common -y
-            # Add Ansible repository to the system
-            sudo add-apt-repository --yes --update ppa:ansible/ansible
-            # Install Ansible
-            sudo apt install ansible -y
-
-# # nodejs.sh
-# #!/bin/bash
-# # Install Node.js LTS version as our base Node.js version
-# curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
-# sudo apt install -y nodejs
-
-# # Use n version manager to use Node.js v13.8.0
-# sudo npm install --global n
-# sudo n 13.8.0
-
-# # circleci.yml
-# install_nodejs:
-#   description: Install Node.js 13
-#   steps:
-#     - run:
-#         name: Install Node.js 13
-#         command: |
-#           chmod +x nodejs.sh
-#           ./nodejs.sh
-
-install_nodejs:
+  install_nodejs:
     description: Install Node.js 13
     steps:
       - run:
@@ -105,6 +77,7 @@ install_nodejs:
             # Use n version manager to use Node.js v13.8.0
             sudo npm install --global n
             sudo n 13.8.0
+
 # # common.sh
 # #!/bin/bash
 # # Delete backend cloudformation stack using workflow ID
@@ -129,6 +102,7 @@ install_nodejs:
 #           chmod +x common.sh
 #           ./common.sh $Workflow_ID
 
+
   destroy-environment:
     description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
     parameters:
@@ -140,11 +114,8 @@ install_nodejs:
           name: Destroy environments
           when: on_fail
           command: |
-            # Delete backend cloudformation stack using workflow ID
             aws cloudformation delete-stack --stack-name udapeople-backend-<< parameters.Workflow_ID >>
-            # Delete files in S3 using workflow ID
             aws s3 rm s3://udapeople-<<parameters.Workflow_ID>> --recursive
-            # Delete frontend cloudformation stack using workflow ID
             aws cloudformation delete-stack --stack-name udapeople-frontend-<< parameters.Workflow_ID >>
 
 
@@ -171,8 +142,6 @@ install_nodejs:
 # Note: This code was not tested, so there may be errors or issues with it.
 
 
-
-
   revert-migrations:
     description: Revert the last migration
     parameters:
@@ -184,16 +153,14 @@ install_nodejs:
           name: Revert migrations
           when: on_fail
           command: |
-            # Check if the last migration was successful
             SUCCESS=$(curl --insecure  https://kvdb.io/${KVDB_BUCKET}/migration_<< parameters.Workflow_ID >>)
-            # Revert database state if last migration was successful
+            # Logic for reverting the database state
             if (( $SUCCESS == 1 ));
             then
               cd ~/project/backend
               npm install
               npm run migration:revert
             fi
-
 
 jobs:
   build-frontend:
@@ -229,7 +196,6 @@ jobs:
       - save_cache:
           paths: [backend/node_modules]
           key: backend-deps
-
 
     # The build-frontend and build-backend jobs checkout the source code,
     #  restore dependencies from cache, and run build scripts for the front-end and back-end, respectively.
@@ -280,7 +246,7 @@ jobs:
             npm audit fix --force --audit-level=critical
             npm audit --audit-level=critical
  
-
+ 
 
   scan-backend:
     docker:
@@ -297,6 +263,7 @@ jobs:
             npm audit fix --force --audit-level=critical
             npm audit fix --force --audit-level=critical
             npm audit --audit-level=critical
+
 
 
 #             YAML. It contains steps to deploy infrastructure for the "udapeople" project using AWS CloudFormation and Ansible. Here's a breakdown of the steps:
@@ -459,8 +426,6 @@ jobs:
       - destroy-environment
       - revert-migrations
 
-
-
 # deploy-backend-infrastructure:
 #   docker:
 #     - image: cimg/base:stable
@@ -551,7 +516,6 @@ jobs:
       - destroy-environment
       - revert-migrations
 
-
 # deploy-backend:
 #   docker:
 #     - image: cimg/base:stable
@@ -628,7 +592,6 @@ jobs:
             fi
       - destroy-environment
       - revert-migrations
-
 
 # smoke-test:
 #   docker:
@@ -717,10 +680,6 @@ jobs:
               aws cloudformation delete-stack --stack-name "udapeople-backend-${OldWorkflowID}"
               aws cloudformation delete-stack --stack-name "udapeople-frontend-${OldWorkflowID}"
             fi
-
-# The first job, cloudfront-update, updates the CloudFront distribution with the latest version of the website. It saves the old workflow ID to a key-value database (kvdb.io) so that it can be used in the next job, cleanup, to remove the old CloudFormation stacks and S3 bucket.
-
-# The second job, cleanup, removes the old CloudFormation stacks and S3 bucket associated with the previous version of the website. It retrieves the old workflow ID from the kvdb.io key-value database and deletes the CloudFormation stacks and S3 bucket associated with that ID.
 
 workflows:
   default:
