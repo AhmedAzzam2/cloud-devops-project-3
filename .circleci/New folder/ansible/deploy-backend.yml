@@ -1,10 +1,18 @@
+# This is an Ansible playbook written in YAML format for deploying to web hosts.
+
+# The playbook is named "deployment play" and specifies the target hosts as "web". The remote user used to connect to the hosts is "ubuntu", and gathering of facts is disabled.
+
+# Several environment variables are set to be used during deployment, with their values looked up from environment variables.
+
+# The playbook has several pre-tasks, including waiting for the target connection to become reachable/usable, installing Python 3, and running the setup command.
+
+# Finally, the playbook calls the "deploy" role to perform the actual deployment.
+
+
 ---
 - name: "deployment play." 
   hosts: web
   remote_user: ubuntu
-  # become: true
-  # become_method: sudo
-  # become_user: root
   gather_facts: false
   vars:
     ansible_python_interpreter: /usr/bin/python3
