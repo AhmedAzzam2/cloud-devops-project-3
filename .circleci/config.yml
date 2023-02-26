@@ -405,7 +405,13 @@ jobs:
 
             if [[ "${STACKS[@]}" =~ "${OldWorkflowID}" ]]
             then
-              aws s3 rm "s3://udapeople-${OldWorkflowID}" --recursive
+              # Check if the S3 bucket exists before attempting to access it
+              if aws s3 ls "s3://udapeople-${OldWorkflowID}" >/dev/null 2>&1; then
+                aws s3 rm "s3://udapeople-${OldWorkflowID}" --recursive
+              else
+                echo "S3 bucket does not exist: udapeople-${OldWorkflowID}"
+              fi
+              
               aws cloudformation delete-stack --stack-name "udapeople-backend-${OldWorkflowID}"
               aws cloudformation delete-stack --stack-name "udapeople-frontend-${OldWorkflowID}"
             fi
