@@ -6,4 +6,6 @@ Frontend url
 
 
 S3 Url
-http://udapeople-c516ca8.s3-website-us-west-2.amazonaws.com/
+http://udapeople-a8322d9.s3-website-us-west-2.amazonaws.com/#/employees
+
+http://34.222.129.142:9090/targets
