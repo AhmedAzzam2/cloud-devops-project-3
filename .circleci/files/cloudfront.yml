@@ -31,9 +31,9 @@ Resources:
             QueryString: False
           TargetOriginId: webpage
           ViewerProtocolPolicy: allow-all
-
+#hfierfhiref
 Outputs:
-  WorkflowID:
+  WorkFlowID:
     Value: !Sub ${WorkflowID}
     Description: URL for website hosted on S3
     Export:
