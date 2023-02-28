@@ -28,12 +28,9 @@ commands:
       - run:
           name: Install Node.js 13
           command: |
-            # Install Node.js LTS version as our base Node.js version
-            curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
+            curl -sL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
             sudo apt install -y nodejs
-
-            # Use n version manager to use Node.js v13.8.0
-            sudo npm install --global n
+            sudo npm i -g n
             sudo n 13.8.0
 
   destroy-environment:
@@ -216,7 +213,7 @@ jobs:
       - install_awscli
       - install_ansible
       - add_ssh_keys:
-          fingerprints: ["a4:74:dc:db:59:70:b6:a5:dc:2b:13:83:00:58:a9:58"]
+          fingerprints: ["d5:a4:0d:bd:36:a7:d2:03:2c:10:93:6a:7c:d1:a7:26"]
       - attach_workspace:
           at: ~/
       - run:
@@ -292,7 +289,7 @@ jobs:
       - install_ansible
       - install_nodejs
       - add_ssh_keys:
-          fingerprints: ["a4:74:dc:db:59:70:b6:a5:dc:2b:13:83:00:58:a9:58"]
+          fingerprints: ["d5:a4:0d:bd:36:a7:d2:03:2c:10:93:6a:7c:d1:a7:26"]
       - attach_workspace:
           at: ~/
       - restore_cache:
@@ -427,7 +424,7 @@ workflows:
           requires: [test-frontend, test-backend, scan-frontend, scan-backend]
           filters:
             branches:
-              only: [master]
+              only: [experimental]
       - configure-infrastructure:
           requires: [deploy-infrastructure]
       - run-migrations:
