@@ -1,0 +1,9 @@
+public GitHub repository.  [URL01]   https://github.com/AhmedAzzam2/cloud-devops-project-3
+
+S3 Bucket URL:             [URL02]   http://udapeople-1532ed1.s3-website-us-west-2.amazonaws.com/
+
+CloudFront URL:            [URL03]   http://d1smb0ud1oozcc.cloudfront.net	
+
+Backend URL in EC2:        [URL04]   http://ec2-52-25-183-22.us-west-2.compute.amazonaws.com:3030/api/status
+
+Prometheus Server:         [URL05]   http://ec2-35-164-8-32.us-west-2.compute.amazonaws.com:9090/targets?search=
