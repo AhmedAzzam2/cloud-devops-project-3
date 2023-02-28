@@ -1,44 +1,38 @@
 ---
-- name: Update packages
-  apt:
-    update_cache: yes
-  tags:
-    - system
 
-- name: Install pm2
-  shell: npm install pm2 -g
-
-- name: Create backend directory
+- name: Creates directory
   file:
-    path: ~/backend
+    path: /home/ubuntu/backend-artifact
     state: directory
 
-- name: install tar
-  apt:
-    name: ["tar"]
-    state: present
-
-- name: copy tar
-  copy:
+- name: "Unarchive"
+  unarchive:
     src: artifact.tar.gz
-    dest: /tmp/
+    dest: /home/ubuntu/backend-artifact
 
-- name: Unpack the artefact
-  shell: tar -xf /tmp/artifact.tar.gz  -C ~/backend
-  args:
-    chdir: ~/backend
+- name: "npm install"
+  shell: |
+    cd /home/ubuntu/backend-artifact
+    npm i
+    
+- name: "Executing ode app with PM"
+  shell: |
+    cd /home/ubuntu/backend-artifact/dist
+    pm2 stop default
+    pm2 start main.js
+ 
+  register: execute_node
 
-- name: assign env
-  shell: mv .env.fix .env
-  args:
-    chdir: ~/backend
+- name: print message
+  debug:
+    msg: "{{ execute_node.stdout_lines }}"
 
-- name: install the application
-  shell: npm install
-  args:
-    chdir: ~/backend
+- name: print message
+  debug:
+    msg: "{{ execute_node.stdout_lines }}"
 
-- name: run the application
-  shell: pm2 start npm -- start
-  args:
-    chdir: ~/backend
+
+- name: "Configure pm2 to start as service"
+  shell: |
+    sudo su -c "env PATH=$PATH:/usr/local/bin pm2 startup systemd -u ubuntu --hp /home/ubuntu"
+    pm2 save
