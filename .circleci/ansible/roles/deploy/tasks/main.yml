@@ -1,25 +1,44 @@
 ---
-- name: "Creates backend app directory"
+- name: Update packages
+  apt:
+    update_cache: yes
+  tags:
+    - system
+
+- name: Install pm2
+  shell: npm install pm2 -g
+
+- name: Create backend directory
   file:
-    path: ~/backend-app
+    path: ~/backend
     state: directory
 
-- name: "Unarchive backend files"
-  unarchive:
+- name: install tar
+  apt:
+    name: ["tar"]
+    state: present
+
+- name: copy tar
+  copy:
     src: artifact.tar.gz
-    dest: ~/backend-app
+    dest: /tmp/
 
-- name: "Installing Node Dependencies"
-  shell: |
-    cd ~/backend-app
-    npm i
-- name: "Executing Node app with PM2"
-  shell: |
-    cd ~/backend-app/dist
-    pm2 stop default
-    pm2 start main.js
-  register: execute_node
+- name: Unpack the artefact
+  shell: tar -xf /tmp/artifact.tar.gz  -C ~/backend
+  args:
+    chdir: ~/backend
 
-- name: print message
-  debug:
-    msg: "{{ execute_node.stdout_lines }}"
+- name: assign env
+  shell: mv .env.fix .env
+  args:
+    chdir: ~/backend
+
+- name: install the application
+  shell: npm install
+  args:
+    chdir: ~/backend
+
+- name: run the application
+  shell: pm2 start npm -- start
+  args:
+    chdir: ~/backend
