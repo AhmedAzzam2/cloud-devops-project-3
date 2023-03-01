@@ -28,12 +28,9 @@ commands:
       - run:
           name: Install Node.js 13
           command: |
-            # Install Node.js LTS version as our base Node.js version
-            curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
+            curl -sL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
             sudo apt install -y nodejs
-
-            # Use n version manager to use Node.js v13.8.0
-            sudo npm install --global n
+            sudo npm i -g n
             sudo n 13.8.0
 
   destroy-environment:
@@ -148,10 +145,11 @@ jobs:
             npm install
             npm audit fix --force --audit-level=critical
             npm audit fix --force --audit-level=critical
+            npm audit fix --force --audit-level=critical
             npm audit --audit-level=critical
 
 
-  scan-backend:
+  scan-backend:  
     docker:
       - image: cimg/node:13.8.0
     steps:
@@ -216,7 +214,7 @@ jobs:
       - install_awscli
       - install_ansible
       - add_ssh_keys:
-          fingerprints: ["d5:a4:0d:bd:36:a7:d2:03:2c:10:93:6a:7c:d1:a7:26"]
+          fingerprints: ["a4:74:dc:db:59:70:b6:a5:dc:2b:13:83:00:58:a9:58"]
       - attach_workspace:
           at: ~/
       - run:
@@ -292,7 +290,7 @@ jobs:
       - install_ansible
       - install_nodejs
       - add_ssh_keys:
-          fingerprints: ["d5:a4:0d:bd:36:a7:d2:03:2c:10:93:6a:7c:d1:a7:26"]
+          fingerprints: ["a4:74:dc:db:59:70:b6:a5:dc:2b:13:83:00:58:a9:58"]
       - attach_workspace:
           at: ~/
       - restore_cache:
@@ -400,15 +398,17 @@ jobs:
                 --stack-status-filter CREATE_COMPLETE --no-paginate --output text)) 
             echo Stack names: "${STACKS[@]}"
 
-            export OldWorkflowID=$(curl --insecure https://kvdb.io/${KVDB_BUCKET}/old_workflow_id)
+            export OldWorkflowID=$(curl --fail --silent --show-error --insecure https://kvdb.io/${KVDB_BUCKET}/old_workflow_id || true)
             echo Old Workflow ID: $OldWorkflowID 
 
-            if [[ "${STACKS[@]}" =~ "${OldWorkflowID}" ]]
+            if [[ ! -z "${OldWorkflowID}" && "${STACKS[@]}" =~ "${OldWorkflowID}" ]]
             then
               aws s3 rm "s3://udapeople-${OldWorkflowID}" --recursive
               aws cloudformation delete-stack --stack-name "udapeople-backend-${OldWorkflowID}"
               aws cloudformation delete-stack --stack-name "udapeople-frontend-${OldWorkflowID}"
             fi
+
+
 
 workflows:
   default:
@@ -427,7 +427,7 @@ workflows:
           requires: [test-frontend, test-backend, scan-frontend, scan-backend]
           filters:
             branches:
-              only: [main]
+              only: [master]
       - configure-infrastructure:
           requires: [deploy-infrastructure]
       - run-migrations:
